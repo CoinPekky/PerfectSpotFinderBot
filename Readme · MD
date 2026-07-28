@@ -1,0 +1,52 @@
+# SpotFinder NG — Telegram Dating/Restaurant Bot
+
+Recommends the best dating spots and fancy restaurants by location + occasion.
+Uses only the Telegram Bot API + a local `data.json` file. No external APIs.
+
+## Files
+- `bot.py` — main bot logic (polling mode)
+- `data.json` — your curated database of spots (country → state → LGA/city → list)
+- `requirements.txt` — dependencies
+- `Procfile` / `railway.json` — tells Railway how to run the bot
+
+## 1. Get a Bot Token
+1. Open Telegram, message **@BotFather**
+2. Send `/newbot`, follow the prompts, pick a name and username
+3. Copy the token it gives you (looks like `123456789:ABC-xxxxxxxxxxxxxxxxx`)
+4. Optionally send `/setuserpic` to BotFather and upload a logo generated from the image prompt provided
+
+## 2. Push to GitHub
+```bash
+git init
+git add .
+git commit -m "Initial SpotFinder NG bot"
+git branch -M main
+git remote add origin https://github.com/<your-username>/<your-repo>.git
+git push -u origin main
+```
+
+## 3. Deploy on Railway
+1. Go to https://railway.app → **New Project** → **Deploy from GitHub repo**
+2. Select your repo
+3. Once the project is created, go to **Variables** and add:
+   - `BOT_TOKEN` = the token from BotFather
+4. Railway will auto-detect Python via Nixpacks and use `railway.json` / `Procfile` to run `python bot.py`
+5. Wait for the deploy to finish — check the **Deploy Logs**, you should see:
+   ```
+   Bot starting with polling...
+   ```
+6. Open Telegram, message your bot `/start` — it should respond instantly
+
+## 4. Expanding the database
+Just edit `data.json` — add more countries, states, and local governments,
+each with a list of spots like:
+```json
+{"name": "Spot Name", "type": "Fancy Restaurant", "tags": ["date","anniversary"], "description": "Why it's great."}
+```
+Valid tags: `date`, `anniversary`, `proposal`, `birthday`, `casual`.
+Commit and push to GitHub — Railway will auto-redeploy.
+
+## Notes
+- This runs in **polling mode** (no public URL/webhook needed), which is the simplest and most reliable setup on Railway for a bot like this.
+- Make sure the Railway service type is **Worker**, not "Web" — it doesn't listen on a port, it just polls Telegram. `railway.json` already sets the correct start command so this should work out of the box.
+- If it crashes on boot, check that `BOT_TOKEN` is set correctly in Railway Variables (no quotes, no spaces).
